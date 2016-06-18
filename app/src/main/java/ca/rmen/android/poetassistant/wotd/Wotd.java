@@ -25,9 +25,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html;
 import android.util.Log;
 
@@ -75,6 +79,7 @@ public final class Wotd {
     private static void enableWotd(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             WotdJob.schedule(context);
+            notifyWotd(context);
         } else {
             WotdAlarm.schedule(context);
         }
@@ -109,6 +114,18 @@ public final class Wotd {
                 .setContentTitle(title)
                 .setSmallIcon(iconId)
                 .setStyle(bigTextStyle);
+
+        if ("HUAWEI".equals(Build.BRAND)) {
+            Drawable iconDrawable = ResourcesCompat.getDrawable(context.getResources(), iconId, null);
+            if (iconDrawable != null) {
+                Bitmap bitmap = Bitmap.createBitmap(iconDrawable.getIntrinsicWidth(), iconDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                iconDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                iconDrawable.draw(canvas);
+                builder.setLargeIcon(bitmap);
+            }
+        }
+
         setShareAction(context, builder, entry);
         Notification notification = builder.build();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
