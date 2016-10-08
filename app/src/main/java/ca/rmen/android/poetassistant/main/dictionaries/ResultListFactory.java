@@ -165,6 +165,7 @@ public class ResultListFactory {
                 fragmentResultListBinding.btnHelp.setVisibility(View.VISIBLE);
                 fragmentResultListBinding.btnPlay.setVisibility(View.GONE);
                 fragmentResultListBinding.btnWebSearch.setVisibility(View.GONE);
+                fragmentResultListBinding.btnStarQuery.setVisibility(View.GONE);
                 break;
             case RHYMER:
             case THESAURUS:
