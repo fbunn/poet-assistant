@@ -55,6 +55,7 @@ import ca.rmen.android.poetassistant.R;
 import ca.rmen.android.poetassistant.Tts;
 import ca.rmen.android.poetassistant.VectorCompat;
 import ca.rmen.android.poetassistant.databinding.FragmentResultListBinding;
+import ca.rmen.android.poetassistant.main.HelpDialogFragment;
 import ca.rmen.android.poetassistant.main.Tab;
 import ca.rmen.android.poetassistant.main.dictionaries.rt.OnFavoriteClickListener;
 
@@ -93,7 +94,7 @@ public class ResultListFragment<T> extends Fragment
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mBinding.recyclerView.setHasFixedSize(true);
 
-        if (mTab == Tab.RHYMER || mTab == Tab.THESAURUS) mBinding.btnFilter.setVisibility(View.VISIBLE);
+        ResultListFactory.updateButtonVisibility(mBinding, mTab, TextToSpeech.ERROR);
         mBinding.tvFilterLabel.setText(ResultListFactory.getFilterLabel(getActivity(), mTab));
 
 
@@ -170,9 +171,7 @@ public class ResultListFragment<T> extends Fragment
     }
 
     private void updatePlayButton() {
-        int ttsStatus = mTts.getStatus();
-        int playButtonVisibility = ttsStatus == TextToSpeech.SUCCESS ? View.VISIBLE : View.GONE;
-        mBinding.btnPlay.setVisibility(playButtonVisibility);
+        ResultListFactory.updateButtonVisibility(mBinding, mTab, mTts.getStatus());
     }
 
     @Override
@@ -308,6 +307,10 @@ public class ResultListFragment<T> extends Fragment
                     ACTION_FILTER,
                     mBinding.tvFilter.getText().toString());
             getChildFragmentManager().beginTransaction().add(fragment, DIALOG_TAG).commit();
+        }
+
+        public void onHelpButtonClicked(@SuppressWarnings("UnusedParameters") View v) {
+            getFragmentManager().beginTransaction().add(new HelpDialogFragment(), DIALOG_TAG).commit();
         }
 
         public void onFilterClearButtonClicked(@SuppressWarnings("UnusedParameters") View v) {

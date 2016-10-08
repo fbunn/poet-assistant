@@ -42,6 +42,7 @@ class PagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = Constants.TAG + PagerAdapter.class.getSimpleName();
 
     private final Context mContext;
+    private String mInitialPatternQuery;
     private String mInitialRhymeQuery;
     private String mInitialThesaurusQuery;
     private String mInitialDictionaryQuery;
@@ -55,7 +56,9 @@ class PagerAdapter extends FragmentPagerAdapter {
         // Deep link to query in a specific tab
         if (initialQuery != null) {
             Tab tab = Tab.parse(initialQuery.getHost());
-            if (tab == Tab.RHYMER) {
+            if (tab == Tab.PATTERN) {
+                mInitialPatternQuery = initialQuery.getLastPathSegment();
+            } else if (tab == Tab.RHYMER) {
                 mInitialRhymeQuery = initialQuery.getLastPathSegment();
             } else if (tab == Tab.THESAURUS) {
                 mInitialThesaurusQuery = initialQuery.getLastPathSegment();
@@ -76,7 +79,9 @@ class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Log.v(TAG, "SectionsPagerAdapter getItem " + position);
-        if (position == Tab.RHYMER.ordinal()) {
+        if (position == Tab.PATTERN.ordinal()) {
+            return ResultListFactory.createListFragment(Tab.PATTERN, mInitialPatternQuery);
+        } else if (position == Tab.RHYMER.ordinal()) {
             return ResultListFactory.createListFragment(Tab.RHYMER, mInitialRhymeQuery);
         } else if (position == Tab.THESAURUS.ordinal()) {
             return ResultListFactory.createListFragment(Tab.THESAURUS, mInitialThesaurusQuery);
@@ -89,12 +94,14 @@ class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position == Tab.RHYMER.ordinal())
+        if (position == Tab.PATTERN.ordinal())
+            return mContext.getString(R.string.tab_pattern).toUpperCase(Locale.getDefault());
+        else if (position == Tab.RHYMER.ordinal())
             return mContext.getString(R.string.tab_rhymer).toUpperCase(Locale.getDefault());
         else if (position == Tab.THESAURUS.ordinal())
             return mContext.getString(R.string.tab_thesaurus).toUpperCase(Locale.getDefault());

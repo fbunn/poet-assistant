@@ -92,9 +92,19 @@ public class Search {
         // We want to retrieve the existing fragment.
         final Runnable performSearch = () -> {
             String wordTrimmed = word.trim().toLowerCase(Locale.US);
-            ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.RHYMER.ordinal())).query(wordTrimmed);
-            ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.THESAURUS.ordinal())).query(wordTrimmed);
-            ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.DICTIONARY.ordinal())).query(wordTrimmed);
+            // If we're searching for a pattern, open the pattern tab
+            if (Patterns.isPattern(wordTrimmed)) {
+                ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.PATTERN.ordinal())).query(wordTrimmed);
+                mViewPager.setCurrentItem(Tab.PATTERN.ordinal());
+            } else {
+                ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.RHYMER.ordinal())).query(wordTrimmed);
+                ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.THESAURUS.ordinal())).query(wordTrimmed);
+                ((ResultListFragment) mViewPager.getAdapter().instantiateItem(mViewPager, Tab.DICTIONARY.ordinal())).query(wordTrimmed);
+                // If we're in the pattern tab but not searching for a pattern, go to the rhymer tab.
+                if (mViewPager.getCurrentItem() == Tab.PATTERN.ordinal()) {
+                    mViewPager.setCurrentItem(Tab.RHYMER.ordinal());
+                }
+            }
         };
         // Issue #19: In a specific scenario, the fragments may not be "ready" yet (onCreateView() may not have been called).
         // Wait until the ViewPager is laid out before invoking anything on the fragments.

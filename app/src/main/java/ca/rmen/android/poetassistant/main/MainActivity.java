@@ -91,8 +91,11 @@ public class MainActivity extends AppCompatActivity implements OnWordClickListen
             } else if (data.getHost().equalsIgnoreCase(Tab.THESAURUS.name().toLowerCase(Locale.US))) {
                 mBinding.viewPager.setCurrentItem(Tab.THESAURUS.ordinal());
             }
-        } else if (Intent.ACTION_SEND.equals(intent.getAction()))
+        } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             mBinding.viewPager.setCurrentItem(Tab.READER.ordinal());
+        } else if (savedInstanceState == null){
+            mBinding.viewPager.setCurrentItem(Tab.RHYMER.ordinal());
+        }
 
         mSearch = new Search(this, mBinding.viewPager);
         loadDictionaries();
