@@ -68,7 +68,7 @@ public class ResultListFragment<T> extends Fragment
     private static final int ACTION_FILTER = 0;
     private static final String DIALOG_TAG = "dialog";
     private static final String EXTRA_FILTER = "filter";
-    static final String EXTRA_TAB = "tab";
+    public static final String EXTRA_TAB = "tab";
     static final String EXTRA_QUERY = "query";
     private FragmentResultListBinding mBinding;
     private final HeaderButtonListener mHeaderButtonListener = new HeaderButtonListener();

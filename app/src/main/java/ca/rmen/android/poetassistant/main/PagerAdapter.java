@@ -26,22 +26,25 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import java.util.Locale;
 
 import ca.rmen.android.poetassistant.Constants;
 import ca.rmen.android.poetassistant.R;
 import ca.rmen.android.poetassistant.main.dictionaries.ResultListFactory;
+import ca.rmen.android.poetassistant.main.dictionaries.ResultListFragment;
 import ca.rmen.android.poetassistant.main.reader.ReaderFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = Constants.TAG + PagerAdapter.class.getSimpleName();
 
     private final Context mContext;
+    private boolean mIsPatternTabVisible;
     private String mInitialPatternQuery;
     private String mInitialRhymeQuery;
     private String mInitialThesaurusQuery;
@@ -76,16 +79,30 @@ class PagerAdapter extends FragmentPagerAdapter {
         }
     }
 
+    /**
+     * @return true if the visibility of the pattern tab has changed
+     */
+    public boolean setPatternTabVisible(boolean visible) {
+        Log.v(TAG, "setPatternTabVisible: " + mIsPatternTabVisible + "->" + visible);
+        if (mIsPatternTabVisible != visible) {
+            mIsPatternTabVisible = visible;
+            notifyDataSetChanged();
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public Fragment getItem(int position) {
-        Log.v(TAG, "SectionsPagerAdapter getItem " + position);
-        if (position == Tab.PATTERN.ordinal()) {
+        Log.v(TAG, "getItem " + position);
+        Tab tab = getTabForPosition(position);
+        if (tab == Tab.PATTERN) {
             return ResultListFactory.createListFragment(Tab.PATTERN, mInitialPatternQuery);
-        } else if (position == Tab.RHYMER.ordinal()) {
+        } else if (tab == Tab.RHYMER) {
             return ResultListFactory.createListFragment(Tab.RHYMER, mInitialRhymeQuery);
-        } else if (position == Tab.THESAURUS.ordinal()) {
+        } else if (tab == Tab.THESAURUS) {
             return ResultListFactory.createListFragment(Tab.THESAURUS, mInitialThesaurusQuery);
-        } else if (position == Tab.DICTIONARY.ordinal()) {
+        } else if (tab == Tab.DICTIONARY) {
             return ResultListFactory.createListFragment(Tab.DICTIONARY, mInitialDictionaryQuery);
         } else {
             return ReaderFragment.newInstance(mInitialPoemText);
@@ -93,21 +110,65 @@ class PagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    public int getItemPosition(Object object) {
+        Log.v(TAG, "getItemPosition " + object);
+        if (object instanceof ResultListFragment) {
+            Tab tab = (Tab) ((ResultListFragment)object).getArguments().getSerializable(ResultListFragment.EXTRA_TAB);
+            return getPositionForTab(tab);
+        }
+        if (object instanceof ReaderFragment) {
+            return getPositionForTab(Tab.READER);
+        }
+        return POSITION_NONE;
+    }
+
+    @Override
     public int getCount() {
-        return 5;
+        return mIsPatternTabVisible ? 5 : 4;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position == Tab.PATTERN.ordinal())
+        Tab tab = getTabForPosition(position);
+        if (tab == Tab.PATTERN)
             return mContext.getString(R.string.tab_pattern).toUpperCase(Locale.getDefault());
-        else if (position == Tab.RHYMER.ordinal())
+        else if (tab == Tab.RHYMER)
             return mContext.getString(R.string.tab_rhymer).toUpperCase(Locale.getDefault());
-        else if (position == Tab.THESAURUS.ordinal())
+        else if (tab == Tab.THESAURUS)
             return mContext.getString(R.string.tab_thesaurus).toUpperCase(Locale.getDefault());
-        else if (position == Tab.DICTIONARY.ordinal())
+        else if (tab == Tab.DICTIONARY)
             return mContext.getString(R.string.tab_dictionary).toUpperCase(Locale.getDefault());
         else
             return mContext.getString(R.string.tab_reader).toUpperCase(Locale.getDefault());
     }
+
+    public Fragment getFragment(ViewGroup viewGroup, Tab tab) {
+        Log.v(TAG, "getFragment: tab=" + tab);
+        int position = getPositionForTab(tab);
+        if (position < 0) return null;
+        // Not intuitive: instantiateItem will actually return an existing Fragment, whereas getItem() will always instantiate a new Fragment.
+        // We want to retrieve the existing fragment.
+        return (Fragment) instantiateItem(viewGroup, position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Log.v(TAG, "getItemId for position " + position);
+        Tab tab = getTabForPosition(position);
+        return tab.ordinal();
+    }
+
+    public Tab getTabForPosition(int position) {
+        return mIsPatternTabVisible ? Tab.values()[position] : Tab.values()[position + 1];
+    }
+
+    public int getPositionForTab(Tab tab) {
+        if (mIsPatternTabVisible) {
+            return tab.ordinal();
+        } else {
+            if (tab == Tab.PATTERN) return POSITION_NONE;
+            return tab.ordinal() - 1;
+        }
+    }
+
 }
