@@ -52,7 +52,7 @@ public class Dictionary {
     }
 
     @NonNull
-    public DictionaryEntry lookup(String word) {
+    DictionaryEntry lookup(String word) {
         SQLiteDatabase db = mDbHelper.getDb();
         if (db != null) {
 

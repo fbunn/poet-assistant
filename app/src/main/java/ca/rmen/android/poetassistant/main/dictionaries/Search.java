@@ -95,9 +95,8 @@ public class Search {
         String wordTrimmed = word.trim().toLowerCase(Locale.US);
 
         selectTabForSearch(wordTrimmed);
-        final boolean isPattern = Patterns.isPattern(wordTrimmed);
         final Runnable performSearch = () -> {
-            if (isPattern) {
+            if (Patterns.isPattern(wordTrimmed)) {
                 ((ResultListFragment) mPagerAdapter.getFragment(mViewPager, Tab.PATTERN)).query(wordTrimmed);
             } else {
                 ((ResultListFragment) mPagerAdapter.getFragment(mViewPager, Tab.RHYMER)).query(wordTrimmed);

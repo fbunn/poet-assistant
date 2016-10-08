@@ -79,17 +79,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    /**
-     * @return true if the visibility of the pattern tab has changed
-     */
-    public boolean setPatternTabVisible(boolean visible) {
+    public void setPatternTabVisible(boolean visible) {
         Log.v(TAG, "setPatternTabVisible: " + mIsPatternTabVisible + "->" + visible);
         if (mIsPatternTabVisible != visible) {
             mIsPatternTabVisible = visible;
             notifyDataSetChanged();
-            return true;
         }
-        return false;
     }
 
     @Override

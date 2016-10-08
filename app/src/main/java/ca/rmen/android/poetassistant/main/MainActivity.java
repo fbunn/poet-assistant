@@ -94,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements OnWordClickListen
             }
         } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             mBinding.viewPager.setCurrentItem(mPagerAdapter.getPositionForTab(Tab.READER));
-        } else if (savedInstanceState == null){
-            mBinding.viewPager.setCurrentItem(mPagerAdapter.getPositionForTab(Tab.RHYMER));
         }
 
         mSearch = new Search(this, mBinding.viewPager);

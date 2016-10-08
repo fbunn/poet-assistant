@@ -22,6 +22,12 @@ public class Patterns {
 
     public static final int MAX_RESULTS = 500;
 
+    /**
+     * USER_PATTERN_SYMBOLS are symbols the user can type for pattern matching.
+     * These are mapped 1-to-1 to SQLITE_PATTERN_SYMBOLS which will be used in
+     * the 'LIKE' clause.  We provide this mapping because ? and * are usually
+     * easier for a user to type, than _ or %.
+     */
     private static final String[] USER_PATTERN_SYMBOLS = new String[]{"?", "*"};
     private static final String[] SQLITE_PATTERN_SYMBOLS = new String[]{"_", "%"};
 
@@ -32,7 +38,7 @@ public class Patterns {
     /**
      * @return true if the given input contains symbols that can be used with pattern matching
      */
-    public static boolean isPattern(String input) {
+    static boolean isPattern(String input) {
         for (String patternSymbol : USER_PATTERN_SYMBOLS) {
             if (input.contains(patternSymbol)) return true;
         }
