@@ -22,6 +22,9 @@ package ca.rmen.android.poetassistant.main;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -42,6 +45,7 @@ import ca.rmen.android.poetassistant.main.reader.ReaderFragment;
  */
 public class PagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = Constants.TAG + PagerAdapter.class.getSimpleName();
+    private static final String EXTRA_IS_PATTERN_TAB_VISIBLE = "is_pattern_tab_visible";
 
     private final Context mContext;
     private boolean mIsPatternTabVisible;
@@ -137,6 +141,20 @@ public class PagerAdapter extends FragmentPagerAdapter {
             return mContext.getString(R.string.tab_reader).toUpperCase(Locale.getDefault());
     }
 
+    @Override
+    public Parcelable saveState() {
+        Bundle bundle = new Bundle(1);
+        bundle.putBoolean(EXTRA_IS_PATTERN_TAB_VISIBLE, mIsPatternTabVisible);
+        return bundle;
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        Bundle bundle = (Bundle) state;
+        boolean isPatternTabVisible = bundle.getBoolean(EXTRA_IS_PATTERN_TAB_VISIBLE);
+        setPatternTabVisible(isPatternTabVisible);
+    }
+
     public Fragment getFragment(ViewGroup viewGroup, Tab tab) {
         Log.v(TAG, "getFragment: tab=" + tab);
         int position = getPositionForTab(tab);
@@ -148,7 +166,6 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public long getItemId(int position) {
-        Log.v(TAG, "getItemId for position " + position);
         Tab tab = getTabForPosition(position);
         return tab.ordinal();
     }
